@@ -1,0 +1,14 @@
+{
+  "name": "trading-journal-webhook",
+  "version": "1.0.0",
+  "description": "Gumroad webhook to Firestore whitelist",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "firebase-admin": "^12.0.0",
+    "body-parser": "^1.20.2"
+  }
+}

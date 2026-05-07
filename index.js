@@ -13,8 +13,10 @@ if (!serviceAccountJson) {
   process.exit(1);
 }
 
+const decodedJson = Buffer.from(serviceAccountJson, 'base64').toString('utf-8');
+
 admin.initializeApp({
-  credential: admin.credential.cert(JSON.parse(serviceAccountJson))
+  credential: admin.credential.cert(JSON.parse(decodedJson))
 });
 
 const db = admin.firestore();

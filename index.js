@@ -13,6 +13,7 @@ if (!serviceAccountJson) {
   process.exit(1);
 }
 
+// 1. Decode base64 string
 const decodedJson = Buffer.from(serviceAccountJson, 'base64').toString('utf-8');
 
 admin.initializeApp({
@@ -33,8 +34,8 @@ app.post('/webhook/gumroad', async (req, res) => {
   try {
     const payload = req.body;
     const email = payload.email;
-    const productId = payload.product_id || payload.product_permalink;
-    
+    const productPermalink = payload.product_permalink || payload.permalink || '';
+
     if (!email) {
       console.error('No email in payload');
       return res.status(400).send('Missing email');
@@ -46,6 +47,15 @@ app.post('/webhook/gumroad', async (req, res) => {
       console.log('Signature received:', signature);
     }
 
+    // Only whitelist for Journal and Course (not Pass-only)
+    const WHITELIST_PRODUCTS = ['trading-journal-pro', 'trading-course'];
+    const isWhitelistProduct = WHITELIST_PRODUCTS.some(p => productPermalink.includes(p));
+
+    if (!isWhitelistProduct) {
+      console.log('Non-whitelist product, skipping:', productPermalink);
+      return res.status(200).send('OK - no whitelist');
+    }
+
     // Normalize email: replace . with _ for Firestore doc ID
     const docId = email.toLowerCase().replace(/\./g, '_');
 
@@ -54,7 +64,7 @@ app.post('/webhook/gumroad', async (req, res) => {
       addedAt: admin.firestore.FieldValue.serverTimestamp(),
       email: email.toLowerCase(),
       source: 'gumroad',
-      productId: productId || ''
+      productId: productPermalink
     });
 
     console.log('Whitelisted:', email);

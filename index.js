@@ -48,7 +48,7 @@ app.post('/webhook/gumroad', async (req, res) => {
     }
 
     // Only whitelist for Journal and Course (not Pass-only)
-    const WHITELIST_PRODUCTS = ['trading-journal-pro', 'trading-course'];
+    const WHITELIST_PRODUCTS = ['trading-journal-pro', 'trading-course', 'trader-combo'];
     const isWhitelistProduct = WHITELIST_PRODUCTS.some(p => productPermalink.includes(p));
 
     if (!isWhitelistProduct) {
